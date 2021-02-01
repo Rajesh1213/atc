@@ -1,6 +1,5 @@
 class Api::V1::InboundController < ApplicationController
 	before_action :get_params, only: [:sms]
-	ActionController::Parameters.permit_all_parameters = true
 
 # Expected API Behavior
 # - The API should do input validation
