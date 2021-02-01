@@ -1,11 +1,11 @@
 class Api::V1::InboundController < ApplicationController
 	before_action :get_params, only: [:sms]
 
-# Expected API Behavior
-# - The API should do input validation
-# - If the ‘to’ parameter is not present in the phone_number table for this specific account you used for the basic authentication, return an error (see Output JSON response below).
-# - When text is STOP or STOP\n or STOP\r or STOP\r\n
-# - The ‘from’ and ‘to’ pair must be stored in cache as a unique entry and should expire after 4 hours.
+	# Expected API Behavior
+	# - The API should do input validation
+	# - If the ‘to’ parameter is not present in the phone_number table for this specific account you used for the basic authentication, return an error (see Output JSON response below).
+	# - When text is STOP or STOP\n or STOP\r or STOP\r\n
+	# - The ‘from’ and ‘to’ pair must be stored in cache as a unique entry and should expire after 4 hours.
 
 	def sms
 		begin
@@ -19,12 +19,11 @@ class Api::V1::InboundController < ApplicationController
 
 			message = get_params[:message]
 			write_to_redis if !message.nil? && message.include?("STOP")
+		rescue => e
+			msg = { "message": "", "error": e.message }
+		end
 		
-			rescue => e
-				msg = { "message": "", "error": e.message }
-			end
-		
-			render json: msg
+		render json: msg
 	end
 
 	def missing_params
@@ -38,8 +37,9 @@ class Api::V1::InboundController < ApplicationController
 	end
 
 	private
-	
+
 	def get_params
 		params.require(:inbound).permit(:to, :from, :message)
 	end
+
 end
